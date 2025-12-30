@@ -28,5 +28,11 @@ module TwitterCopy
     # Middleware like session, flash, cookies can be added back manually.
     # Skip views, helpers and assets when generating a new resource.
     config.api_only = true
+    # 1. Wymagane do obsługi ciasteczek
+    config.middleware.use ActionDispatch::Cookies
+
+    # 2. Wymagane do obsługi sesji (Devise/Warden tego potrzebuje pod spodem,
+    # nawet jeśli sama autoryzacja jest bezstanowa)
+    config.middleware.use ActionDispatch::Session::CookieStore, key: '_namespace_key'
   end
 end

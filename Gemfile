@@ -40,6 +40,6 @@ group :development, :test do
   gem "rubocop-rails-omakase", require: false
 end
 
-
+gem 'omniauth'
 gem 'devise_token_auth'
 gem 'rack-cors'

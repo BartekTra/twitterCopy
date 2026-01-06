@@ -28,6 +28,7 @@ const LoginPage = () => {
       <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="Email" />
       <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Hasło" />
       <button type="submit">Zaloguj</button>
+      <p> No teoretycznie to działa, ale nie jestem pewien</p>
     </form>
   );
 };

@@ -8,12 +8,12 @@
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
     # Tutaj wpisz dokładny adres frontendu (nie używaj '*')
-    origins 'http://localhost:5173' 
+    origins "http://localhost:5173"
 
-    resource '*',
+    resource "*",
       headers: :any,
-      methods: [:get, :post, :put, :patch, :delete, :options, :head],
+      methods: [ :get, :post, :put, :patch, :delete, :options, :head ],
       # KLUCZOWE: pozwala na przesyłanie ciasteczek
-      credentials: true 
+      credentials: true
   end
 end

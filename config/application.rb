@@ -33,6 +33,6 @@ module TwitterCopy
 
     # 2. Wymagane do obsługi sesji (Devise/Warden tego potrzebuje pod spodem,
     # nawet jeśli sama autoryzacja jest bezstanowa)
-    config.middleware.use ActionDispatch::Session::CookieStore, key: '_namespace_key'
+    config.middleware.use ActionDispatch::Session::CookieStore, key: "_namespace_key"
   end
 end

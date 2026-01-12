@@ -1,22 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, type FormEvent } from 'react';
 import api from '../api/axios.ts';
 
 const LoginPage = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
 
-  const handleLogin = async (e: any) => {
+  const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      // Wysyłamy dane
       const response = await api.post('/auth/sign_in', {
         email,
         password
       });
 
       console.log("Zalogowano!", response.data);
-      // Tutaj np. przekieruj użytkownika lub zaktualizuj Context
-      // UWAGA: Nie musisz ręcznie zapisywać tokena! Przeglądarka już to zrobiła.
 
     } catch (error) {
       console.error("Błąd logowania", error);

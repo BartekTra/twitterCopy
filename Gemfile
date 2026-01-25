@@ -43,3 +43,4 @@ end
 gem "omniauth"
 gem "devise_token_auth"
 gem "rack-cors"
+gem "image_processing"

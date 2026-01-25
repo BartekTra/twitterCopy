@@ -1,36 +1,76 @@
-// Np. w App.js lub AuthContext.js
-import { useEffect, useState } from "react";
-import api from "../api/axios.tsx";
+import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import api from "../api/axios"; 
+import { useNavigate } from "react-router-dom";
 
-const App = () => {
-  type User = {
-    email: string;
-  };
+export interface User {
+  id: number;
+  email: string;
+  name?: string;
+}
+
+interface UserContextType {
+  user: User | null;
+  loading: boolean;
+  refetchUser: () => Promise<void>;
+  setUser: React.Dispatch<React.SetStateAction<User | null>>;
+  logout: () => Promise<void>;
+}
+
+const UserContext = createContext<UserContextType | null>(null);
+
+interface UserProviderProps {
+  children: ReactNode;
+}
+
+export const UserProvider = ({ children }: UserProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<boolean>(true);
+  const navigate = useNavigate();
+
+  const fetchCurrentUser = async () => {
+    setLoading(true);
+    try {
+      const response = await api.get<User>("/user/current_user");
+      console.log(response.data);
+      setUser(response.data);
+      navigate("/");
+    } catch (error) {
+      console.error("Error fetching user:", error);
+      setUser(null);
+      navigate("/login"); 
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const logout = async () => {
+    try {
+      await api.delete("/auth/sign_out");
+    } catch (error) {
+      console.error("Error during logout:", error);
+    } finally {
+      setUser(null);
+      navigate("/login");
+    }
+  };
 
   useEffect(() => {
-    const checkUserLoggedIn = async () => {
-      try {
-        // Zapytanie do endpointu walidacji.
-        // Dzięki withCredentials: true, przeglądarka sama wyśle ciasteczko auth_cookie
-        const response = await api.get("/auth/validate_token");
-        console.log(response);
-        setUser(response.data.data);
-      } catch (error) {
-        // Użytkownik nie jest zalogowany (401 Unauthorized)
-        setUser(null);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    checkUserLoggedIn();
+    fetchCurrentUser();
   }, []);
 
-  if (loading) return <div>Ładowanie...</div>;
-
   return (
-    <div>{user ? <h1>Witaj, {user.email}</h1> : <h1>Zaloguj się</h1>}</div>
+    <UserContext.Provider
+      value={{ user, loading, refetchUser: fetchCurrentUser, setUser, logout }}
+    >
+      {children}
+    </UserContext.Provider>
   );
+};
+
+export const useUser = (): UserContextType => {
+  const context = useContext(UserContext);
+  if (!context) {
+    throw new Error("useUser must be used within a UserProvider");
+  }
+  return context;
 };

@@ -14,14 +14,10 @@ module Api
         {
           id: user.id,
           email: user.email,
-          name: user.name,
+          display_name: user.display_name,
           nickname: user.nickname,
-          image: user.image,
-          provider: user.provider,
-          uid: user.uid,
           confirmed: user.confirmed?,
-          created_at: user.created_at,
-          updated_at: user.updated_at
+          avatar: user.avatar_url
         }
       end
     end

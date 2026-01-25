@@ -10,7 +10,9 @@ Rails.application.configure do
 
   # Do not eager load code on boot.
   config.eager_load = false
-
+  config.active_storage.resolve_model_to_route = :rails_storage_proxy
+  # Ustawienie hosta dla generowanych linków
+  Rails.application.routes.default_url_options[:host] = "localhost:3000"
   # Show full error reports.
   config.consider_all_requests_local = true
 

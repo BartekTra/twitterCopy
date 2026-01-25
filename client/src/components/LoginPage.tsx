@@ -1,9 +1,12 @@
 import React, { useState, type FormEvent } from 'react';
 import api from '../api/axios.ts';
-
+import { useNavigate } from 'react-router-dom';
+import { useUser } from '../context/UserContext.tsx';
 const LoginPage = () => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
+  const navigate = useNavigate();
+  const { refetchUser } = useUser();
 
   const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -12,8 +15,7 @@ const LoginPage = () => {
         email,
         password
       });
-
-      console.log("Zalogowano!", response.data);
+      refetchUser();
 
     } catch (error) {
       console.error("Błąd logowania", error);
@@ -21,12 +23,14 @@ const LoginPage = () => {
   };
 
   return (
-    <form onSubmit={handleLogin}>
-      <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="Email" />
-      <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Hasło" />
-      <button type="submit">Zaloguj</button>
-      <p> No teoretycznie to działa, ale nie jestem pewien</p>
-    </form>
+    <div>
+      <button onClick={() => navigate("/register")}>XD</button>
+      <form onSubmit={handleLogin}>
+        <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="Email" />
+        <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Hasło" />
+        <button type="submit">Zaloguj</button>
+      </form>
+    </div>
   );
 };
 

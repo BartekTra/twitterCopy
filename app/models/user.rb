@@ -6,4 +6,32 @@ class User < ActiveRecord::Base
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
   include DeviseTokenAuth::Concerns::User
+
+  has_one_attached :avatar
+
+  has_many :tweets, dependent: :destroy
+  has_many :likes
+
+  has_many :given_follows, foreign_key: :follower_id, class_name: "Follow"
+  has_many :followings, through: :given_follows, source: :followed
+
+  has_many :received_follows, foreigh_key: :followed_id, class_name: "Follow"
+  has_many :followers, through: :receiver_follows, source: :follower
+
+  def following?(user)
+    followings.include?(user)
+  end
+
+  def follow(user)
+    followings << user
+  end
+
+
+
+
+  def avatar_url
+    return nil unless avatar.attached?
+    # Generuje pełny link do zdjęcia
+    Rails.application.routes.url_helpers.url_for(avatar)
+  end
 end

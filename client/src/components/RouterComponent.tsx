@@ -1,11 +1,11 @@
 // App.js
-import { Routes, Route } from 'react-router-dom';
-import LoginPage from './LoginPage';
-import RegisterPage from './RegisterPage';
-import MainPage from './MainPage';
+import { Routes, Route } from "react-router-dom";
+import LoginPage from "./AuthenticationComponents/LoginPage";
+import RegisterPage from "./AuthenticationComponents/RegisterPage";
+import MainPage from "./MainPage";
 const RouterComponent = () => {
   return (
-    <div className="App">
+    <div>
       <Routes>
         <Route path="/" element={<MainPage />} />
         <Route path="/login" element={<LoginPage />} />
@@ -13,6 +13,6 @@ const RouterComponent = () => {
       </Routes>
     </div>
   );
-}
+};
 
 export default RouterComponent;

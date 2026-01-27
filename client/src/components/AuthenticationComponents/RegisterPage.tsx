@@ -1,5 +1,5 @@
 import React, { useState, type FormEvent } from "react";
-import api from "../api/axios.ts";
+import api from "../../api/axios.ts";
 import { useNavigate } from "react-router-dom";
 
 const RegisterPage = () => {

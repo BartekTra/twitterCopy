@@ -1,11 +1,18 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
-import api from "../api/axios"; 
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  type ReactNode,
+} from "react";
+import api from "../api/axios";
 import { useNavigate } from "react-router-dom";
 
 export interface User {
   id: number;
   email: string;
-  name?: string;
+  display_name: string;
+  nickname: string;
 }
 
 interface UserContextType {
@@ -31,13 +38,13 @@ export const UserProvider = ({ children }: UserProviderProps) => {
     setLoading(true);
     try {
       const response = await api.get<User>("/user/current_user");
-      console.log(response.data);
       setUser(response.data);
+      console.log(response.data);
       navigate("/");
     } catch (error) {
       console.error("Error fetching user:", error);
       setUser(null);
-      navigate("/login"); 
+      navigate("/login");
     } finally {
       setLoading(false);
     }

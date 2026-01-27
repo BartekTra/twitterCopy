@@ -1,6 +1,5 @@
 module Api
   module V1
-    module Auth
       class SessionsController < DeviseTokenAuth::SessionsController
         before_action :authenticate_api_v1_user, only: ["destroy"]
         # POST /api/v1/auth/sign_in
@@ -35,5 +34,5 @@ module Api
         end
       end
     end
-  end
+
 end

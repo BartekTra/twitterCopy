@@ -15,7 +15,7 @@ class User < ActiveRecord::Base
   has_many :given_follows, foreign_key: :follower_id, class_name: "Follow"
   has_many :followings, through: :given_follows, source: :followed
 
-  has_many :received_follows, foreigh_key: :followed_id, class_name: "Follow"
+  has_many :received_follows, foreign_key: :followed_id, class_name: "Follow"
   has_many :followers, through: :receiver_follows, source: :follower
 
   def following?(user)
@@ -26,12 +26,12 @@ class User < ActiveRecord::Base
     followings << user
   end
 
-
-
+  def unfollow(user)
+    followings.destroy(user)
+  end
 
   def avatar_url
     return nil unless avatar.attached?
-    # Generuje pełny link do zdjęcia
     Rails.application.routes.url_helpers.url_for(avatar)
   end
 end

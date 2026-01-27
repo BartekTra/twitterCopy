@@ -1,8 +1,41 @@
 @import "tailwindcss";
+@tailwind utilities;
 
 @theme {
   --color-twitterDarkBackgroud: #010000;
   --color-twitterOutliner: #2f3336;
   --color-twitterText: #e7e8ea;
+  --color-twitterDarkFont: #606468;
+  --font-chirp: "Chirp", sans-serif;
 }
 
+@layer base {
+  @font-face {
+    font-family: 'Chirp';
+    src: url('./assets/fonts/twitterChirp/Chirp Regular.woff') format('woff');
+    font-weight: 400; /* Regular */
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'Chirp';
+    src: url('./assets/fonts/twitterChirp/Chirp Medium.woff') format('woff');
+    font-weight: 500; /* Medium */
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'Chirp';
+    src: url('./assets/fonts/twitterChirp/Chirp Bold.woff') format('woff');
+    font-weight: 700; /* Bold */
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'Chirp';
+    src: url('./assets/fonts/twitterChirp/Chirp Heavy.woff') format('woff');
+    font-weight: 900; /* Heavy */
+    font-style: normal;
+    font-display: swap;
+  }
+}

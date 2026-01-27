@@ -1,7 +1,7 @@
 module Api
   module V1
       class SessionsController < DeviseTokenAuth::SessionsController
-        before_action :authenticate_api_v1_user, only: ["destroy"]
+        before_action :authenticate_api_v1_user, only: [ "destroy" ]
         # POST /api/v1/auth/sign_in
         def create
           user = User.find_by(email: params[:email])
@@ -33,6 +33,5 @@ module Api
             }, status: :ok
         end
       end
-    end
-
+  end
 end

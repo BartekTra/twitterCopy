@@ -7,13 +7,7 @@ import {
 } from "react";
 import api from "../api/axios";
 import { useNavigate } from "react-router-dom";
-
-export interface User {
-  id: number;
-  email: string;
-  display_name: string;
-  nickname: string;
-}
+import { type User } from "../components/MainContent/MainContentComponents/types/user";
 
 interface UserContextType {
   user: User | null;

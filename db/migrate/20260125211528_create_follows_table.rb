@@ -11,6 +11,6 @@ class CreateFollowsTable < ActiveRecord::Migration[7.2]
     add_index :follows, :follower_id
     add_index :follows, :followed_id
     # Zapobiega duplikatom (nie możesz obserwować kogoś 2 razy)
-    add_index :follows, [:follower_id, :followed_id], unique: true
+    add_index :follows, [ :follower_id, :followed_id ], unique: true
   end
 end

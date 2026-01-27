@@ -17,7 +17,7 @@ module Api
           display_name: user.display_name,
           nickname: user.nickname,
           confirmed: user.confirmed?,
-          avatar: user.avatar_url
+          avatar_url: user.avatar_url
         }
       end
     end

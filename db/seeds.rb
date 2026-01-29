@@ -16,8 +16,8 @@ User.destroy_all
 
 USER_COUNT = 30
 TWEETS_PER_USER = 5
-REPLIES_COUNT = 100
-LIKES_COUNT = 200
+REPLIES_COUNT = 1000
+LIKES_COUNT = 1000
 
 users = []
 test_user = User.create!(
@@ -28,9 +28,12 @@ test_user = User.create!(
   bio: 'To jest konto do testowania aplikacji.'
 )
 
-test_user_avatar = Faker::Avatar.image(slug: test_user.nickname, size: "300x300", format: "png")
-downloaded_image = URI.open(test_user_avatar)
-test_user.avatar.attach(io: downloaded_image, filename: "avatar_#{test_user.nickname}.png")
+
+test_user.avatar.attach(
+  io: File.open(Rails.root.join('public', 'profpic.jpg')),
+  filename: 'profpic.jpg',
+  content_type: 'image/jpeg'
+)
 
 users << test_user
 
@@ -45,12 +48,11 @@ users << test_user
 
   users << user
 
-  avatar_url = Faker::Avatar.image(slug: user.nickname, size: "300x300", format: "png")
-
-  begin
-    downloaded_image = URI.open(avatar_url)
-    user.avatar.attach(io: downloaded_image, filename: "avatar_#{user.nickname}.png")
-  end
+user.avatar.attach(
+  io: File.open(Rails.root.join('public', 'profpic.jpg')),
+  filename: 'profpic.jpg',
+  content_type: 'image/jpeg'
+)
 end
 
 

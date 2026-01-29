@@ -2,7 +2,7 @@ module Api
   module V1
     class TweetsController < ApplicationController
       def index
-        @tweets = Tweet.includes(:user).all
+        @tweets = Tweet.includes(:user).where(parent_tweet_id: nil)
         render json: @tweets, include: {
           user: {
             only: [ :id, :nickname, :display_name ],
@@ -12,8 +12,12 @@ module Api
       end
 
       def show
-        @tweet = Tweet.find(params[:id]).includes(:user)
-        render json: @tweet
+        @tweet = Tweet.includes(:user, replies: :user).find(params[:id])
+
+        render json: @tweet, include: [
+          :user,
+          { replies: { include: :user } }
+        ]
       end
 
       def create

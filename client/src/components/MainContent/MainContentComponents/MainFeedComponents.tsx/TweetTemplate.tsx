@@ -13,10 +13,8 @@ const TweetTemplate = ({ tweet }: { tweet: Tweet }) => {
   const navigate = useNavigate();
 
   return (
-    <div className="border-twitterOutliner hover:bg-twitterTweetHoverBackground 
-    cursor-pointer border-b px-4 font-[15px] transition-colors">
+    <div className="border-twitterOutliner hover:bg-twitterTweetHoverBackground cursor-pointer border-b px-4 font-[15px] transition-colors">
       <div className="flex flex-1 flex-row py-3">
-        {/* Avatar */}
         <div className="pr-2">
           <img
             src={tweet.user.avatar_url}
@@ -25,19 +23,18 @@ const TweetTemplate = ({ tweet }: { tweet: Tweet }) => {
           />
         </div>
 
-        {/* Content */}
         <div className="flex-1">
-          {/* Header */}
           <div className="flex flex-row items-center gap-1">
-            <p className="font-bold text-twitterText">{tweet.user.display_name}</p>
+            <p className="text-twitterText font-bold">
+              {tweet.user.display_name}
+            </p>
             <p className="text-twitterDarkFont">@{tweet.user.nickname}</p>
             <span className="text-twitterDarkFont">·</span>
-            <p className="text-sm text-twitterDarkFont">2h</p> {/* Przykładowa data */}
+            <p className="text-twitterDarkFont text-sm">2h</p>
           </div>
 
-          {/* Body */}
           <div className="mt-1 mb-2">
-            <p className="leading-normal text-twitterText">{tweet.content}</p>
+            <p className="text-twitterText leading-normal">{tweet.content}</p>
           </div>
 
           <div className="-ml-2 flex w-full max-w-md justify-between">
@@ -45,6 +42,7 @@ const TweetTemplate = ({ tweet }: { tweet: Tweet }) => {
               Icon={MessageCircle}
               action={handleCommentButton}
               color="blue"
+              counter={tweet.replies_counter}
             />
 
             <TweetButton
@@ -52,9 +50,15 @@ const TweetTemplate = ({ tweet }: { tweet: Tweet }) => {
               action={handleRetweetButton}
               color="green"
               size={22}
+              counter={0}
             />
 
-            <TweetButton Icon={Heart} action={handleHeartButton} color="pink" />
+            <TweetButton
+              Icon={Heart}
+              action={handleHeartButton}
+              color="pink"
+              counter={tweet.likes_count}
+            />
 
             <div className="flex gap-1">
               <TweetButton

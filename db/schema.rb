@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_01_25_211610) do
+ActiveRecord::Schema[7.2].define(version: 2026_01_29_115732) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -70,6 +70,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_25_211610) do
     t.integer "retweets_count", default: 0
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "replies_counter", default: 0, null: false
     t.index ["parent_tweet_id"], name: "index_tweets_on_parent_tweet_id"
     t.index ["user_id"], name: "index_tweets_on_user_id"
   end

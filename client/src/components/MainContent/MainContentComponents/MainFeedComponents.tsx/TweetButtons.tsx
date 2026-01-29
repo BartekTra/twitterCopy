@@ -1,5 +1,7 @@
 import React from "react";
 import { type LucideIcon } from "lucide-react";
+import { Heart, MessageCircle } from "lucide-react";
+import type { Tweet } from "../types/tweet";
 
 type ButtonColor = "blue" | "green" | "pink" | "default";
 
@@ -8,6 +10,7 @@ interface TweetButtonProps {
   action: () => void;
   color?: ButtonColor; // Opcjonalny kolor, domyślnie 'blue' lub 'default'
   size?: number;
+  counter?: number;
 }
 
 const colorVariants = {
@@ -29,7 +32,13 @@ const colorVariants = {
   },
 };
 
-const TweetButton = ({ Icon, action, color = "blue", size = 18.75 }: TweetButtonProps) => {
+const TweetButton = ({
+  Icon,
+  action,
+  color = "blue",
+  size = 18.75,
+  counter,
+}: TweetButtonProps) => {
   const styles = colorVariants[color] || colorVariants.default;
 
   return (
@@ -38,19 +47,21 @@ const TweetButton = ({ Icon, action, color = "blue", size = 18.75 }: TweetButton
         e.stopPropagation(); // Zapobiega kliknięciu w tweeta, gdy klikasz guzik
         action();
       }}
-      className="group flex items-center outline-none transition-transform active:scale-90"
+      className="group flex items-center transition-transform outline-none active:scale-90"
     >
       {/* Kółko tła */}
-      <div className={`flex items-center justify-center rounded-full p-2 transition-colors duration-200 ${styles.wrapper}`}>
+      <div
+        className={`flex items-center justify-center rounded-full p-2 transition-colors duration-200 ${styles.wrapper}`}
+      >
         {/* Ikona */}
         <Icon
           size={size}
           className={`text-gray-500 transition-colors duration-200 ${styles.icon}`}
         />
       </div>
-      
+
       {/* Tutaj opcjonalnie w przyszłości dodasz licznik (np. liczbę lajków) */}
-      {/* <span className={`ml-1 text-xs text-gray-500 ${styles.icon}`}>12</span> */}
+      <p className="font-chirp text-[13px] text-twitterDarkFont">{counter}</p>
     </button>
   );
 };

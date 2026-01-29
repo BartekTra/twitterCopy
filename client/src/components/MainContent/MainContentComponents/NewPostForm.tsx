@@ -1,23 +1,38 @@
-import React, { useState, useRef, type ChangeEvent } from "react";
+import React, { useState, useRef, type ChangeEvent, useEffect } from "react";
 import { useUser } from "../../../context/UserContext";
 import { Image, Smile } from "lucide-react";
 import TweetButton from "./MainFeedComponents.tsx/TweetButtons";
-
+import EmojiPicker, { EmojiStyle } from "emoji-picker-react";
 import ImagePreview from "./NewPostFormComponents/ImagePreview";
-import { useImageUpload } from "./NewPostFormComponents/useImageUpload"; 
+import { useImageUpload } from "./NewPostFormComponents/useImageUpload";
+import type { EmojiClickData } from "emoji-picker-react/dist/types/exposedTypes";
 
 const NewPostForm: React.FC = () => {
   const [text, setText] = useState<string>("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { user, loading } = useUser();
   const [showPicker, setShowPicker] = useState<boolean>(false);
+  const emojiPickerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleOutsideClick = (event: MouseEvent) => {
+      if (
+        emojiPickerRef.current &&
+        !emojiPickerRef.current.contains(event.target as Node)
+      ) {
+        setShowPicker(false);
+      }
+    };
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => document.removeEventListener("mousedown", handleOutsideClick);
+  }, []);
 
   const {
     selectedImages,
     fileInputRef,
     handleImageButtonClick,
     handleFileChange,
-    removeImage
+    removeImage,
   } = useImageUpload();
 
   if (loading) return <p>Loading...</p>;
@@ -33,6 +48,11 @@ const NewPostForm: React.FC = () => {
   const handleInput = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setText(e.target.value);
     adjustHeight();
+  };
+
+  const onEmojiClick = (emojiData: EmojiClickData): void => {
+    setText(text.concat(emojiData.emoji));
+    setShowPicker(false);
   };
 
   return (
@@ -67,7 +87,7 @@ const NewPostForm: React.FC = () => {
               onChange={handleFileChange}
               style={{ display: "none" }}
             />
-            
+
             <TweetButton
               Icon={Image}
               color="blue"
@@ -79,6 +99,16 @@ const NewPostForm: React.FC = () => {
               color="blue"
               action={() => setShowPicker(true)}
             />
+
+            {showPicker && (
+              <div ref={emojiPickerRef}
+              style={{ position: "absolute", zIndex: 10, top: "170px" }}>
+                <EmojiPicker
+                  emojiStyle={EmojiStyle.NATIVE}
+                  onEmojiClick={onEmojiClick}
+                />
+              </div>
+            )}
           </div>
           <div className="place-content-end">
             <button

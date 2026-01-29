@@ -1,53 +1,94 @@
-import React from "react";
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useRef, type ChangeEvent } from "react";
 import { useUser } from "../../../context/UserContext";
-import { Image, SquarePlay, Smile } from "lucide-react";
+import { Image, Smile } from "lucide-react";
 import TweetButton from "./MainFeedComponents.tsx/TweetButtons";
 
-const handleNothing = () => {
-  console.log("Nothing");
-};
+import ImagePreview from "./NewPostFormComponents/ImagePreview";
+import { useImageUpload } from "./NewPostFormComponents/useImageUpload"; 
 
-const NewPostForm = () => {
-  const navigate = useNavigate();
+const NewPostForm: React.FC = () => {
+  const [text, setText] = useState<string>("");
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { user, loading } = useUser();
-  const { text, setText } = useState<String>("");
-  if (loading) return <p>XD</p>;
-  useEffect(() => {
-    console.log(user?.avatar_url);
-    console.log(user?.id);
-  }, [user]);
+  const [showPicker, setShowPicker] = useState<boolean>(false);
+
+  const {
+    selectedImages,
+    fileInputRef,
+    handleImageButtonClick,
+    handleFileChange,
+    removeImage
+  } = useImageUpload();
+
+  if (loading) return <p>Loading...</p>;
+
+  const adjustHeight = () => {
+    const textarea = textareaRef.current;
+    if (textarea) {
+      textarea.style.height = "auto";
+      textarea.style.height = `${textarea.scrollHeight}px`;
+    }
+  };
+
+  const handleInput = (e: ChangeEvent<HTMLTextAreaElement>) => {
+    setText(e.target.value);
+    adjustHeight();
+  };
+
   return (
-    <div className="border-twitterOutliner flex min-h-30 flex-row border-b px-4">
+    <div className="border-twitterOutliner flex flex-row gap-3 border-b px-4">
       <div className="py-3">
         <img
-          src={user?.avatar_url}
-          className="outline-twitterOutliner h-12 min-h-12 w-12 min-w-12 rounded-full outline"
-        ></img>
+          src={user?.avatar_url || ""}
+          className="outline-twitterOutliner h-12 min-h-12 w-12 min-w-12 rounded-full object-cover outline"
+          alt="Avatar"
+        />
       </div>
-      <div className="flex-1 py-3">
-        <div className="h-13 place-content-center items-center justify-center text-center">
-          <textarea
-            className="min-h-[50px] w-full resize-none border-none bg-transparent py-2 text-xl text-white placeholder-gray-500 outline-none focus:ring-0"
-            placeholder="What's happening?!"
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-          />
-        </div>
 
-        <div className="flex h-12 w-full flex-1 flex-row justify-between">
-          <div className="grid grid-cols-3 place-content-end gap-3">
-            <TweetButton Icon={Image} color="blue" action={handleNothing} />
-            <TweetButton
-              Icon={SquarePlay}
-              color="blue"
-              action={handleNothing}
+      <div className="flex-1 py-3">
+        <textarea
+          ref={textareaRef}
+          rows={1}
+          className="peer w-full resize-none overflow-hidden bg-transparent py-2 text-xl text-white placeholder-gray-500 outline-none focus:ring-0"
+          placeholder="What's happening?!"
+          value={text}
+          onChange={handleInput}
+        />
+
+        <ImagePreview images={selectedImages} onRemove={removeImage} />
+
+        <div className="peer-focus:border-twitterOutliner mt-2 flex flex-row items-center justify-between border-t border-transparent pt-2">
+          <div className="flex gap-1">
+            <input
+              type="file"
+              multiple
+              accept="image/*"
+              ref={fileInputRef}
+              onChange={handleFileChange}
+              style={{ display: "none" }}
             />
-            <TweetButton Icon={Smile} color="blue" action={handleNothing} />
+            
+            <TweetButton
+              Icon={Image}
+              color="blue"
+              action={handleImageButtonClick}
+            />
+
+            <TweetButton
+              Icon={Smile}
+              color="blue"
+              action={() => setShowPicker(true)}
+            />
           </div>
           <div className="place-content-end">
-            <button className="text-twitterDarkBackgroud font-chirp h-9 w-16 rounded-full bg-[#797b7b] font-bold">
+            <button
+              disabled={!text.trim() && selectedImages.length === 0}
+              className={`rounded-full px-4 py-1.5 font-bold transition-colors duration-200 ${
+                text.trim() || selectedImages.length > 0
+                  ? "bg-[#1d9bf0] text-white hover:bg-[#1a8cd8]"
+                  : "cursor-default bg-[#0f4e78] text-gray-400 opacity-50"
+              }`}
+            >
               Post
             </button>
           </div>

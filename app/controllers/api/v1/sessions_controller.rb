@@ -15,7 +15,8 @@ module Api
             sign_in(:user, user)
             render json: {
               status: "success",
-              data: user.as_json(only: [ :id, :email, :nickname, :avatar ])
+              data: user.as_json(only: [ :id, :email, :nickname ]),
+              methods: [avatar_url]
             }
           else
             render json: { status: "error", message: "Invalid credentials" }, status: :unauthorized

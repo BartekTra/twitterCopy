@@ -39,7 +39,7 @@ const TweetTemplate = ({ tweet }: { tweet: Tweet }) => {
             <p className="text-twitterText leading-normal">{tweet.content}</p>
           </div>
 
-          <div className="-ml-2 flex w-full max-w-md justify-between">
+          <div className="-ml-2 flex w-full justify-between">
             <TweetButton
               Icon={MessageCircle}
               action={handleCommentButton}

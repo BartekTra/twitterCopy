@@ -1,14 +1,13 @@
 import React from "react";
 import { type LucideIcon } from "lucide-react";
-import { Heart, MessageCircle } from "lucide-react";
-import type { Tweet } from "../types/tweet";
 
-type ButtonColor = "blue" | "green" | "pink" | "default";
+type ButtonColor = "blue" | "green" | "pink" | "white" | "default";
 
 interface TweetButtonProps {
-  Icon: LucideIcon; // Przekazujemy komponent ikony, a nie JSX
-  action: () => void;
-  color?: ButtonColor; // Opcjonalny kolor, domyślnie 'blue' lub 'default'
+  Icon: LucideIcon;
+  // ZMIANA 1: Typ musi akceptować MouseEvent, aby pasował do tego, co przekazujesz w rodzicu
+  action: (e: React.MouseEvent<HTMLButtonElement>) => void; 
+  color?: ButtonColor;
   size?: number;
   counter?: number;
 }
@@ -25,6 +24,10 @@ const colorVariants = {
   pink: {
     wrapper: "group-hover:bg-pink-600/10",
     icon: "group-hover:text-pink-600",
+  },
+  white: {
+    wrapper: "group-hover:bg-white/10",
+    icon: "group-hover:text-white text-white",
   },
   default: {
     wrapper: "group-hover:bg-gray-500/10",
@@ -44,24 +47,23 @@ const TweetButton = ({
   return (
     <button
       onClick={(e) => {
-        e.stopPropagation(); // Zapobiega kliknięciu w tweeta, gdy klikasz guzik
-        action();
+        e.stopPropagation(); // To jest super - blokuje nawigację rodzica
+        action(e); // ZMIANA 2: Musimy przekazać 'e' do funkcji action, żeby rodzic go odebrał
       }}
       className="group flex items-center transition-transform outline-none active:scale-90"
     >
-      {/* Kółko tła */}
       <div
         className={`flex items-center justify-center rounded-full p-2 transition-colors duration-200 ${styles.wrapper}`}
       >
-        {/* Ikona */}
         <Icon
           size={size}
           className={`text-gray-500 transition-colors duration-200 ${styles.icon}`}
         />
       </div>
 
-      {/* Tutaj opcjonalnie w przyszłości dodasz licznik (np. liczbę lajków) */}
-      <p className="font-chirp text-[13px] text-twitterDarkFont">{counter}</p>
+      {counter !== undefined && counter > 0 && (
+        <p className="font-chirp text-twitterDarkFont text-[13px] ml-1">{counter}</p>
+      )}
     </button>
   );
 };

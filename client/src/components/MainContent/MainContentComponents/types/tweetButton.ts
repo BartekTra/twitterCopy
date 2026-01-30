@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-export interface TweetButton{
+export interface TweetButton {
   content: ReactNode;
-  action: () => void;
+  action: (e: React.MouseEvent<HTMLButtonElement | HTMLDivElement>) => void;
 }

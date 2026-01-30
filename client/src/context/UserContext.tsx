@@ -34,7 +34,6 @@ export const UserProvider = ({ children }: UserProviderProps) => {
       const response = await api.get<User>("/user/current_user");
       setUser(response.data);
       console.log(response.data);
-      navigate("/");
     } catch (error) {
       console.error("Error fetching user:", error);
       setUser(null);

@@ -1,7 +1,6 @@
-
 import type { User } from "./user";
 
-export interface Tweet{
+export interface Tweet {
   id: number;
   user_id: number;
   content: string;
@@ -12,4 +11,5 @@ export interface Tweet{
   updated_at: string;
   user: User;
   replies_counter: number;
+  replies: Tweet[];
 }

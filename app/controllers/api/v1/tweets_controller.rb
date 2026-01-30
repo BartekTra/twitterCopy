@@ -15,7 +15,9 @@ module Api
         @tweet = Tweet.includes(:user, replies: :user).find(params[:id])
 
         render json: @tweet, include: [
-          :user,
+          { user: {
+            methods: [ :avatar_url ]
+          } },
           { replies: { include: :user } }
         ]
       end

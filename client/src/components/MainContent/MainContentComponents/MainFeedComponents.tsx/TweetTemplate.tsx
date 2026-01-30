@@ -13,7 +13,9 @@ const TweetTemplate = ({ tweet }: { tweet: Tweet }) => {
   const navigate = useNavigate();
 
   return (
-    <div className="border-twitterOutliner hover:bg-twitterTweetHoverBackground cursor-pointer border-b px-4 font-[15px] transition-colors">
+    <div 
+    onClick={() => navigate(`/${tweet.id}`)}
+    className="border-twitterOutliner hover:bg-twitterTweetHoverBackground cursor-pointer border-b px-4 font-[15px] transition-colors">
       <div className="flex flex-1 flex-row py-3">
         <div className="pr-2">
           <img

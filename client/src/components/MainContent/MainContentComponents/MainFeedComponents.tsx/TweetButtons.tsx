@@ -50,7 +50,7 @@ const TweetButton = ({
         e.stopPropagation(); // To jest super - blokuje nawigację rodzica
         action(e); // ZMIANA 2: Musimy przekazać 'e' do funkcji action, żeby rodzic go odebrał
       }}
-      className="group flex items-center transition-transform outline-none active:scale-90"
+      className="group flex items-center transition-transform outline-none active:scale-90 cursor-pointer"
     >
       <div
         className={`flex items-center justify-center rounded-full p-2 transition-colors duration-200 ${styles.wrapper}`}

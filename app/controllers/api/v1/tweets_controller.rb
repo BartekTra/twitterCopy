@@ -12,14 +12,24 @@ module Api
       end
 
       def show
+        # Pobieramy główny tweet
         @tweet = Tweet.includes(:user, replies: :user).find(params[:id])
 
-        render json: @tweet, include: [
-          { user: {
-            methods: [ :avatar_url ]
-          } },
-          { replies: { include: :user } }
-        ]
+        ancestors_data = @tweet.ancestors.as_json(
+          include: {
+            user: {
+              only: [ :id, :nickname, :display_name ],
+              methods: [ :avatar_url ]
+            }
+          }
+        )
+
+        render json: @tweet.as_json(
+          include: [
+            { user: { methods: [ :avatar_url ] } },
+            { replies: { include: { user: { methods: [ :avatar_url ] } } } }
+          ]
+        ).merge({ ancestors: ancestors_data })
       end
 
       def create

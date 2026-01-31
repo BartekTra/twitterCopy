@@ -1,13 +1,11 @@
-import React from "react";
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useUser } from "../../context/UserContext";
 import { type Tweet } from "./types/tweet";
 import api from "../../../api/axios";
-import TweetTemplate from "./MainFeedComponents.tsx/TweetTemplate";
+import TweetRendering from "./Partials/TweetRendering";
 
 const MainFeed = () => {
-  const navigate = useNavigate();
   const [tweets, setTweets] = useState<Tweet[]>();
 
   useEffect(() => {
@@ -25,7 +23,7 @@ const MainFeed = () => {
   return (
     <div className="border-twitterOutliner h-999 border-t-0">
       {tweets?.map((tweet) => (
-        <TweetTemplate key={tweet.id} tweet={tweet} />
+        <TweetRendering key={tweet.id} tweet={tweet} />
       ))}
     </div>
   );

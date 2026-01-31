@@ -6,5 +6,15 @@ class Tweet < ApplicationRecord
 
   has_many :likes
 
-
+  def ancestors
+    chain = []
+    current = self
+    
+    while current.parent_tweet
+      current = Tweet.includes(:user).find(current.parent_tweet_id)
+      chain.unshift(current) 
+    end
+    
+    chain
+  end
 end

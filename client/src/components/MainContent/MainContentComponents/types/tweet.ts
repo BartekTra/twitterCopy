@@ -12,4 +12,5 @@ export interface Tweet {
   user: User;
   replies_counter: number;
   replies: Tweet[];
+  ancestors: Tweet[];
 }

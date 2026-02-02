@@ -206,7 +206,7 @@ const TweetDetails = ({ tweet, currentUser }: TweetDetailsProps) => {
         )}
         <button
           onClick={handleReplySubmit}
-          disabled={!replyContent.trim() || isSubmitting}
+          disabled={(!replyContent.trim() && selectedFiles.length === 0) || isSubmitting}
           className={`font-chirp ml-auto h-9 w-21 rounded-full font-bold transition ${
             !replyContent.trim() || isSubmitting
               ? "cursor-default bg-[#0f4e78] text-gray-500"

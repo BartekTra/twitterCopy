@@ -22,6 +22,7 @@ import EmojiPicker, {
   EmojiStyle,
   type EmojiClickData,
 } from "emoji-picker-react";
+
 interface TweetDetailsProps {
   tweet: Tweet;
   currentUser: User | null;
@@ -29,15 +30,10 @@ interface TweetDetailsProps {
 
 const TweetDetails = ({ tweet, currentUser }: TweetDetailsProps) => {
   const [replyContent, setReplyContent] = useState("");
-
-  const handleInput = (e: ChangeEvent<HTMLTextAreaElement>) => {
-    setReplyContent(e.target.value);
-    adjustHeight();
-  };
-
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPicker, setShowPicker] = useState<boolean>(false);
-  const [text, setText] = useState<string>("");
+
+  // Destrukturyzacja hooka do obrazków (dodano clearImages)
   const {
     selectedImages,
     selectedFiles,
@@ -45,8 +41,9 @@ const TweetDetails = ({ tweet, currentUser }: TweetDetailsProps) => {
     handleImageButtonClick,
     handleFileChange,
     removeImage,
-    clearImages,
+    clearImages, 
   } = useImageUpload();
+
   const handleHeartButton = () => console.log("Heart");
   const handleCommentButton = () => console.log("Comment");
   const handleRetweetButton = () => console.log("Retweet");
@@ -57,35 +54,11 @@ const TweetDetails = ({ tweet, currentUser }: TweetDetailsProps) => {
 
   const isoDate = tweet.created_at;
 
-  const handleReplySubmit = async () => {
-    if (!replyContent.trim()) return;
-
-    setIsSubmitting(true);
-
-    try {
-      const response = await axios.post("/tweets", {
-        tweet: {
-          content: replyContent,
-          parent_tweet_id: tweet.id,
-        },
-      });
-
-      console.log("Dodano komentarz:", response.data);
-
-      setReplyContent("");
-      window.location.reload();
-    } catch (error) {
-      console.error("Błąd podczas dodawania odpowiedzi:", error);
-      alert("Nie udało się dodać odpowiedzi.");
-    } finally {
-      setIsSubmitting(false);
-    }
+  const handleInput = (e: ChangeEvent<HTMLTextAreaElement>) => {
+    setReplyContent(e.target.value);
+    adjustHeight();
   };
-  const onEmojiClick = (emojiData: EmojiClickData): void => {
-    setReplyContent(replyContent.concat(emojiData.emoji));
-    setShowPicker(false);
-  };
-  if (!isoDate) return <p> xd </p>;
+
   const adjustHeight = () => {
     const textarea = textareaRef.current;
     if (textarea) {
@@ -93,8 +66,64 @@ const TweetDetails = ({ tweet, currentUser }: TweetDetailsProps) => {
       textarea.style.height = `${textarea.scrollHeight}px`;
     }
   };
+
+  const onEmojiClick = (emojiData: EmojiClickData): void => {
+    setReplyContent(replyContent.concat(emojiData.emoji));
+    setShowPicker(false);
+  };
+
+  // --- NOWA LOGIKA PRZYCISKU ---
+  // Przycisk zablokowany tylko gdy: (nie ma tekstu I nie ma plików) LUB trwa wysyłanie
+  const isButtonDisabled = (!replyContent.trim() && selectedFiles.length === 0) || isSubmitting;
+
+  const handleReplySubmit = async () => {
+    if (isButtonDisabled) return;
+
+    setIsSubmitting(true);
+
+    try {
+      // --- TWORZENIE FORM DATA ---
+      const formData = new FormData();
+      
+      // Dodajemy treść tweeta
+      formData.append("tweet[content]", replyContent);
+      // Dodajemy ID rodzica
+      formData.append("tweet[parent_tweet_id]", tweet.id.toString());
+
+      // Dodajemy pliki (zakładając, że backend Rails oczekuje tablicy images[])
+      selectedFiles.forEach((file) => {
+        formData.append("tweet[attachments][]", file);
+      });
+
+      const response = await axios.post("/tweets", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      console.log("Dodano komentarz:", response.data);
+
+      // Resetowanie stanu po sukcesie
+      setReplyContent("");
+      clearImages(); // Czyści pliki z hooka
+      setShowPicker(false);
+      
+      // Opcjonalnie: Zamiast reloadu, lepiej byłoby dodać tweet do listy lokalnie,
+      // ale przy reloadzie zadziała na pewno.
+      window.location.reload(); 
+    } catch (error) {
+      console.error("Błąd podczas dodawania odpowiedzi:", error);
+      alert("Nie udało się dodać odpowiedzi.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  if (!isoDate) return <p> xd </p>;
+
   return (
     <div className="border-twitterOutliner border-b px-4">
+      {/* SEKCJA AUTORA TWEETA GŁÓWNEGO */}
       <div className="mt-4 mb-4 flex h-10 flex-row">
         <div className="mr-2 flex h-10 w-10.5 items-center justify-start">
           <img
@@ -151,6 +180,7 @@ const TweetDetails = ({ tweet, currentUser }: TweetDetailsProps) => {
         </div>
       </div>
 
+      {/* SEKCJA FORMULARZA ODPOWIEDZI */}
       <div className="mt-2 flex min-h-21 flex-row gap-2 pt-1 pb-3">
         <div className="flex items-start">
           <img
@@ -170,9 +200,11 @@ const TweetDetails = ({ tweet, currentUser }: TweetDetailsProps) => {
             disabled={isSubmitting}
           />
 
+          {/* Podgląd zdjęć */}
           <ImagePreview images={selectedImages} onRemove={removeImage} />
         </div>
       </div>
+
       <div className="mb-4 flex-1 flex flex-row pl-10">
         <input
           type="file"
@@ -204,11 +236,13 @@ const TweetDetails = ({ tweet, currentUser }: TweetDetailsProps) => {
             />
           </div>
         )}
+        
+        {/* Przycisk Submit ze zmienioną logiką stylów i disable */}
         <button
           onClick={handleReplySubmit}
-          disabled={(!replyContent.trim() && selectedFiles.length === 0) || isSubmitting}
+          disabled={isButtonDisabled}
           className={`font-chirp ml-auto h-9 w-21 rounded-full font-bold transition ${
-            !replyContent.trim() || isSubmitting
+            isButtonDisabled
               ? "cursor-default bg-[#0f4e78] text-gray-500"
               : "bg-twitterDarkFont text-twitterDarkBackgroud hover:bg-opacity-90"
           }`}

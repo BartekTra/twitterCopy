@@ -1,8 +1,8 @@
 import { useState, useRef, type ChangeEvent } from "react";
 
 export const useImageUpload = () => {
-  const [selectedImages, setSelectedImages] = useState<string[]>([]); 
-  const [selectedFiles, setSelectedFiles] = useState<File[]>([]); 
+  const [selectedImages, setSelectedImages] = useState<string[]>([]);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleImageButtonClick = (): void => {
@@ -13,17 +13,25 @@ export const useImageUpload = () => {
     const files = event.target.files;
     if (files) {
       const filesArray = Array.from(files);
-      
+
       if (selectedFiles.length + filesArray.length > 4) {
         alert("Możesz dodać maksymalnie 4 pliki.");
         return;
       }
 
-      const newImagesUrls = filesArray.map((file) => URL.createObjectURL(file));
-      
+      const newImagesUrls = filesArray.map((file) => {
+        const url = URL.createObjectURL(file);
+
+        if (file.type.startsWith("video/")) {
+          return `${url}#video`;
+        }
+
+        return url;
+      });
+
       setSelectedImages((prev) => [...prev, ...newImagesUrls]);
       setSelectedFiles((prev) => [...prev, ...filesArray]);
-      
+
       event.target.value = "";
     }
   };
@@ -41,18 +49,18 @@ export const useImageUpload = () => {
   };
 
   const clearImages = () => {
-    selectedImages.forEach(url => URL.revokeObjectURL(url));
+    selectedImages.forEach((url) => URL.revokeObjectURL(url));
     setSelectedImages([]);
     setSelectedFiles([]);
-  }
+  };
 
   return {
     selectedImages,
-    selectedFiles, 
+    selectedFiles,
     fileInputRef,
     handleImageButtonClick,
     handleFileChange,
     removeImage,
-    clearImages
+    clearImages,
   };
 };

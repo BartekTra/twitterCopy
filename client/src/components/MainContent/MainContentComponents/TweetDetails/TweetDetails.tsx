@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useRef, useState, type ChangeEvent } from "react";
 import type { Tweet } from "../types/tweet";
-import type { User } from "../types/user"; // Załóżmy, że masz taki typ
+import type { User } from "../types/user";
 import TweetButton from "../MainFeedComponents.tsx/TweetButtons";
 import {
   MessageCircle,
@@ -8,33 +8,93 @@ import {
   Heart,
   Bookmark,
   Share,
-  ArrowLeft,
+  Image,
+  Smile,
 } from "lucide-react";
 import { format } from "date-fns";
 import { pl } from "date-fns/locale";
 import { useNavigate } from "react-router-dom";
+import axios from "../../../../api/axios";
+import { useImageUpload } from "../NewPostFormComponents/useImageUpload";
 
+import ImagePreview from "../NewPostFormComponents/ImagePreview";
+import EmojiPicker, {
+  EmojiStyle,
+  type EmojiClickData,
+} from "emoji-picker-react";
 interface TweetDetailsProps {
   tweet: Tweet;
   currentUser: User | null;
 }
 
 const TweetDetails = ({ tweet, currentUser }: TweetDetailsProps) => {
-  // Logika przycisków (można ją też wynieść wyżej, ale tu jest ok dla UI)
+  const [replyContent, setReplyContent] = useState("");
+
+  const handleInput = (e: ChangeEvent<HTMLTextAreaElement>) => {
+    setReplyContent(e.target.value);
+    adjustHeight();
+  };
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPicker, setShowPicker] = useState<boolean>(false);
+  const [text, setText] = useState<string>("");
+  const {
+    selectedImages,
+    selectedFiles,
+    fileInputRef,
+    handleImageButtonClick,
+    handleFileChange,
+    removeImage,
+    clearImages,
+  } = useImageUpload();
   const handleHeartButton = () => console.log("Heart");
   const handleCommentButton = () => console.log("Comment");
   const handleRetweetButton = () => console.log("Retweet");
-  console.log(tweet);
+
+  const emojiPickerRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const navigate = useNavigate();
 
   const isoDate = tweet.created_at;
-  if (!isoDate) return <p> xd </p>;
 
+  const handleReplySubmit = async () => {
+    if (!replyContent.trim()) return;
+
+    setIsSubmitting(true);
+
+    try {
+      const response = await axios.post("/tweets", {
+        tweet: {
+          content: replyContent,
+          parent_tweet_id: tweet.id,
+        },
+      });
+
+      console.log("Dodano komentarz:", response.data);
+
+      setReplyContent("");
+      window.location.reload();
+    } catch (error) {
+      console.error("Błąd podczas dodawania odpowiedzi:", error);
+      alert("Nie udało się dodać odpowiedzi.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+  const onEmojiClick = (emojiData: EmojiClickData): void => {
+    setReplyContent(replyContent.concat(emojiData.emoji));
+    setShowPicker(false);
+  };
+  if (!isoDate) return <p> xd </p>;
+  const adjustHeight = () => {
+    const textarea = textareaRef.current;
+    if (textarea) {
+      textarea.style.height = "auto";
+      textarea.style.height = `${textarea.scrollHeight}px`;
+    }
+  };
   return (
     <div className="border-twitterOutliner border-b px-4">
-      {/* <- POST */}
-
-      {/* Avatar + nickname + display_name */}
       <div className="mt-4 mb-4 flex h-10 flex-row">
         <div className="mr-2 flex h-10 w-10.5 items-center justify-start">
           <img
@@ -53,17 +113,14 @@ const TweetDetails = ({ tweet, currentUser }: TweetDetailsProps) => {
         </div>
       </div>
 
-      {/* TREŚĆ */}
       <div className="mb-2 text-xl">{tweet.content}</div>
 
-      {/* DATA */}
       <div className="mb-2">
         <span className="font-chirp text-twitterDarkFont font-light">
           {format(new Date(isoDate), "d MMMM yyyy, HH:mm", { locale: pl })}
         </span>
       </div>
 
-      {/* IKONKI AKCJI */}
       <div className="border-twitterOutliner -ml-2 flex w-full justify-between border-y py-1">
         <TweetButton
           Icon={MessageCircle}
@@ -94,22 +151,69 @@ const TweetDetails = ({ tweet, currentUser }: TweetDetailsProps) => {
         </div>
       </div>
 
-      {/* INPUT ODPOWIEDZI (Reply Box) */}
-      <div className="mt-2 flex h-21 flex-row items-center gap-2 pt-1 pb-3">
-        <div className="flex items-center justify-center">
+      <div className="mt-2 flex min-h-21 flex-row gap-2 pt-1 pb-3">
+        <div className="flex items-start">
           <img
             src={currentUser?.avatar_url}
             className="h-10 w-10 rounded-full object-cover"
             alt="My Avatar"
           />
         </div>
-        <textarea
-          rows={1}
-          className="flex-1 resize-none overflow-hidden bg-transparent text-xl text-white placeholder-gray-500 outline-none focus:ring-0"
-          placeholder="Post your reply"
+        <div className="flex w-full flex-col">
+          <textarea
+            rows={1}
+            ref={textareaRef}
+            className="w-full resize-none overflow-hidden bg-transparent text-xl text-white placeholder-gray-500 outline-none focus:ring-0"
+            placeholder="Post your reply"
+            value={replyContent}
+            onChange={handleInput}
+            disabled={isSubmitting}
+          />
+
+          <ImagePreview images={selectedImages} onRemove={removeImage} />
+        </div>
+      </div>
+      <div className="mb-4 flex-1 flex flex-row pl-10">
+        <input
+          type="file"
+          multiple
+          accept="image/*, video/*"
+          ref={fileInputRef}
+          onChange={handleFileChange}
+          style={{ display: "none" }}
+          disabled={isSubmitting || selectedFiles.length >= 4}
         />
-        <button className="font-chirp text-twitterDarkBackgroud bg-twitterDarkFont hover:bg-opacity-90 h-9 w-21 rounded-full font-bold transition">
-          Reply
+        <TweetButton
+          Icon={Image}
+          color="blue"
+          action={handleImageButtonClick}
+        />
+        <TweetButton
+          Icon={Smile}
+          color="blue"
+          action={() => setShowPicker(true)}
+        />
+        {showPicker && (
+          <div
+            ref={emojiPickerRef}
+            style={{ position: "absolute", zIndex: 10, top: "170px" }}
+          >
+            <EmojiPicker
+              emojiStyle={EmojiStyle.NATIVE}
+              onEmojiClick={onEmojiClick}
+            />
+          </div>
+        )}
+        <button
+          onClick={handleReplySubmit}
+          disabled={!replyContent.trim() || isSubmitting}
+          className={`font-chirp ml-auto h-9 w-21 rounded-full font-bold transition ${
+            !replyContent.trim() || isSubmitting
+              ? "cursor-default bg-[#0f4e78] text-gray-500"
+              : "bg-twitterDarkFont text-twitterDarkBackgroud hover:bg-opacity-90"
+          }`}
+        >
+          {isSubmitting ? "..." : "Reply"}
         </button>
       </div>
     </div>

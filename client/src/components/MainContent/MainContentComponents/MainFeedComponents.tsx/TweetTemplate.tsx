@@ -90,6 +90,7 @@ const TweetTemplate = ({ tweet }: { tweet: Tweet }) => {
                   preload="metadata"
                   className={mediaClass}
                   onClick={(e) => openModal(url, e)}
+
                 >
                   Twoja przeglądarka nie obsługuje video.
                 </video>

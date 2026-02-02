@@ -6,9 +6,11 @@ import EmojiPicker, { EmojiStyle } from "emoji-picker-react";
 import ImagePreview from "./NewPostFormComponents/ImagePreview";
 import { useImageUpload } from "./NewPostFormComponents/useImageUpload";
 import type { EmojiClickData } from "emoji-picker-react/dist/types/exposedTypes";
+import axios from "../../../api/axios.ts"; 
 
 const NewPostForm: React.FC = () => {
   const [text, setText] = useState<string>("");
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false); 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { user, loading } = useUser();
   const [showPicker, setShowPicker] = useState<boolean>(false);
@@ -29,10 +31,12 @@ const NewPostForm: React.FC = () => {
 
   const {
     selectedImages,
+    selectedFiles, 
     fileInputRef,
     handleImageButtonClick,
     handleFileChange,
     removeImage,
+    clearImages
   } = useImageUpload();
 
   if (loading) return <p>Loading...</p>;
@@ -55,6 +59,36 @@ const NewPostForm: React.FC = () => {
     setShowPicker(false);
   };
 
+  const handleSubmit = async () => {
+    if (!text.trim() && selectedFiles.length === 0) return;
+
+    setIsSubmitting(true);
+    const formData = new FormData();
+    formData.append("tweet[content]", text);
+    
+    selectedFiles.forEach((file) => {
+      formData.append("tweet[attachments][]", file);
+    });
+
+    try {
+      await axios.post("/tweets", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      setText("");
+      clearImages();
+      if (textareaRef.current) textareaRef.current.style.height = "auto";
+      
+    } catch (error) {
+      console.error("Failed to post tweet:", error);
+      alert("Wystąpił błąd podczas dodawania tweeta.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className="border-twitterOutliner flex flex-row gap-3 border-b px-4">
       <div className="py-3">
@@ -73,6 +107,7 @@ const NewPostForm: React.FC = () => {
           placeholder="What's happening?!"
           value={text}
           onChange={handleInput}
+          disabled={isSubmitting}
         />
 
         <ImagePreview images={selectedImages} onRemove={removeImage} />
@@ -82,10 +117,11 @@ const NewPostForm: React.FC = () => {
             <input
               type="file"
               multiple
-              accept="image/*"
+              accept="image/*, video/*"
               ref={fileInputRef}
               onChange={handleFileChange}
               style={{ display: "none" }}
+              disabled={isSubmitting || selectedFiles.length >= 4}
             />
 
             <TweetButton
@@ -112,14 +148,15 @@ const NewPostForm: React.FC = () => {
           </div>
           <div className="place-content-end">
             <button
-              disabled={!text.trim() && selectedImages.length === 0}
+              onClick={handleSubmit}
+              disabled={(!text.trim() && selectedImages.length === 0) || isSubmitting}
               className={`rounded-full px-4 py-1.5 font-bold transition-colors duration-200 ${
-                text.trim() || selectedImages.length > 0
+                (text.trim() || selectedImages.length > 0) && !isSubmitting
                   ? "bg-[#1d9bf0] text-white hover:bg-[#1a8cd8]"
                   : "cursor-default bg-[#0f4e78] text-gray-400 opacity-50"
               }`}
             >
-              Post
+              {isSubmitting ? "Posting..." : "Post"}
             </button>
           </div>
         </div>

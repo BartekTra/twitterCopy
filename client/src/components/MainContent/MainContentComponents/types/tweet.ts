@@ -13,4 +13,5 @@ export interface Tweet {
   replies_counter: number;
   replies: Tweet[];
   ancestors: Tweet[];
+  attachments_urls: string[];
 }

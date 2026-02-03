@@ -1,13 +1,11 @@
 import TweetTemplate from "../MainFeedComponents.tsx/TweetTemplate";
 import type { Tweet } from "../types/tweet";
-import { useNavigate } from "react-router-dom";
 
 interface TweetRenderingProps {
   tweet: Tweet;
 }
 
 const TweetRendering = ({ tweet }: TweetRenderingProps) => {
-  const navigate = useNavigate();
 
   return (
     <div>

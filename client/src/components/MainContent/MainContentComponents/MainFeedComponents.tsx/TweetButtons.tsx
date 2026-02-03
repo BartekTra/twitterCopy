@@ -5,7 +5,6 @@ type ButtonColor = "blue" | "green" | "pink" | "white" | "default";
 
 interface TweetButtonProps {
   Icon: LucideIcon;
-  // ZMIANA 1: Typ musi akceptować MouseEvent, aby pasował do tego, co przekazujesz w rodzicu
   action: (e: React.MouseEvent<HTMLButtonElement>) => void; 
   color?: ButtonColor;
   size?: number;
@@ -47,8 +46,8 @@ const TweetButton = ({
   return (
     <button
       onClick={(e) => {
-        e.stopPropagation(); // To jest super - blokuje nawigację rodzica
-        action(e); // ZMIANA 2: Musimy przekazać 'e' do funkcji action, żeby rodzic go odebrał
+        e.stopPropagation(); 
+        action(e); 
       }}
       className="group flex items-center transition-transform outline-none active:scale-90 cursor-pointer"
     >

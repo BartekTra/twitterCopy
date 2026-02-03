@@ -1,5 +1,4 @@
-import React from "react";
-import { useState, useEffect } from "react";
+
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../../context/UserContext";
 import MainContentNavbar from "./MainContentComponents/MainContentNavbar";
@@ -8,7 +7,6 @@ import ShowNewPostsNotification from "./MainContentComponents/ShowNewPosts";
 import MainFeed from "./MainContentComponents/MainFeed";
 
 const MainContent = () => {
-  const navigate = useNavigate();
   const { user, loading } = useUser();
   if(loading) return <p>Loading...</p>
   return (

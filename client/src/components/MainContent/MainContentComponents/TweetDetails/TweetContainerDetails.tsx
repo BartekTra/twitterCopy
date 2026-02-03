@@ -1,17 +1,14 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../../../../api/axios";
 import { useUser } from "../../../../context/UserContext";
 import { ArrowLeft } from "lucide-react";
 import TweetButton from "../MainFeedComponents.tsx/TweetButtons";
 
-// Importuj komponenty podrzędne
 import TweetDetails from "./TweetDetails";
 import type { Tweet } from "../types/tweet";
-import TweetReplies from "./TweetReplies";
 import TweetAncestors from "./TweetAncestors";
 import TweetRendering from "../Partials/TweetRendering";
-import TweetTemplate from "../MainFeedComponents.tsx/TweetTemplate";
 
 const TweetContainerDetails = () => {
   const { id } = useParams<{ id: string }>();
@@ -21,7 +18,6 @@ const TweetContainerDetails = () => {
   const [tweetDetails, setTweetDetails] = useState<Tweet | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Pobieranie danych
   useEffect(() => {
     const fetchTweetDetails = async () => {
       try {
@@ -58,7 +54,6 @@ const TweetContainerDetails = () => {
         </div>
       </div>
 
-      {/* KOMPONENT GŁÓWNEGO TWEETA */}
       {tweetDetails?.ancestors.map((tweet) => (
         <div key={tweet.id} className="relative p-3">
           <TweetAncestors

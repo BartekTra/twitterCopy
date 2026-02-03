@@ -1,6 +1,5 @@
 
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { type Tweet } from "./types/tweet";
 import api from "../../../api/axios";
 import TweetRendering from "./Partials/TweetRendering";

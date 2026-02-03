@@ -1,11 +1,6 @@
-import React, { useState, type FormEvent } from "react";
-import api from "../api/axios.ts";
-import { useNavigate } from "react-router-dom";
-import { useUser } from "../context/UserContext.tsx";
 import NavigationSidebar from "./NavigationSidebar/navigationSidebar.tsx";
 import MainContent from "./MainContent/mainContent.tsx";
 import WidgetsSidebar from "./WidgetsSidebar/widgetsSidebar.tsx";
-import TweetDetails from "./MainContent/MainContentComponents/TweetDetails/TweetDetails.tsx";
 import TweetContainerDetails from "./MainContent/MainContentComponents/TweetDetails/TweetContainerDetails.tsx";
 
 interface MainPageProps {

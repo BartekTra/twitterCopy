@@ -33,23 +33,19 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({ images, onRemove }) => {
   const count = images.length;
   const isSingle = count === 1;
 
-  // --- LOGIKA GRIDU (Dla wielu zdjęć) ---
   let gridClass = "";
   switch (count) {
-    case 1: gridClass = "grid-cols-1"; break; // Teoretycznie nieużywane przy isSingle, ale dla bezpieczeństwa
+    case 1: gridClass = "grid-cols-1"; break; 
     case 2: gridClass = "grid-cols-2"; break;
     case 3: gridClass = "grid-cols-2 grid-rows-2"; break;
     case 4: gridClass = "grid-cols-2 grid-rows-2"; break;
     default: gridClass = "grid-cols-2";
   }
 
-  // --- STYLE DYNAMICZNE ---
-  // Jeśli jedno zdjęcie: h-auto (naturalna wysokość). Jeśli grid: h-72 (sztywna wysokość).
   const containerClass = isSingle
     ? "mt-3 flex w-full h-auto overflow-hidden rounded-2xl border border-twitterOutliner/30 relative"
     : `mt-3 grid h-72 gap-0.5 overflow-hidden rounded-2xl ${gridClass} border border-twitterOutliner/30`;
 
-  // Jeśli jedno zdjęcie: zachowaj proporcje (h-auto). Jeśli grid: wypełnij kafelek (h-full).
   const mediaClass = isSingle
     ? "w-full h-auto max-h-[600px] object-cover bg-black cursor-pointer hover:opacity-90 transition-opacity"
     : "h-full w-full object-cover bg-black cursor-pointer hover:opacity-90 transition-opacity";
@@ -62,7 +58,6 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({ images, onRemove }) => {
       >
         {images.map((url, index) => {
           let spanClass = "";
-          // Logika spanów tylko dla gridu (3+ zdjęć)
           if (!isSingle && count === 3 && index === 0) spanClass = "row-span-2";
 
           const isFileVideo = isVideo(url);
@@ -114,7 +109,6 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({ images, onRemove }) => {
         })}
       </div>
 
-      {/* MODAL (Bez zmian) */}
       {selectedMedia && createPortal(
         <div
           className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/90 p-4 backdrop-blur-sm"

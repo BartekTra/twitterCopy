@@ -1,4 +1,4 @@
-import React, { useRef, useState, type ChangeEvent } from "react";
+import { useRef, useState, type ChangeEvent } from "react";
 import type { Tweet } from "../types/tweet";
 import type { User } from "../types/user";
 import TweetButton from "../MainFeedComponents.tsx/TweetButtons";
@@ -13,7 +13,6 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { pl } from "date-fns/locale";
-import { useNavigate } from "react-router-dom";
 import axios from "../../../../api/axios";
 import { useImageUpload } from "../NewPostFormComponents/useImageUpload";
 
@@ -50,7 +49,6 @@ const TweetDetails = ({ tweet, currentUser }: TweetDetailsProps) => {
 
   const emojiPickerRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const navigate = useNavigate();
 
   const isoDate = tweet.created_at;
 
@@ -72,8 +70,6 @@ const TweetDetails = ({ tweet, currentUser }: TweetDetailsProps) => {
     setShowPicker(false);
   };
 
-  // --- NOWA LOGIKA PRZYCISKU ---
-  // Przycisk zablokowany tylko gdy: (nie ma tekstu I nie ma plików) LUB trwa wysyłanie
   const isButtonDisabled = (!replyContent.trim() && selectedFiles.length === 0) || isSubmitting;
 
   const handleReplySubmit = async () => {
@@ -82,15 +78,11 @@ const TweetDetails = ({ tweet, currentUser }: TweetDetailsProps) => {
     setIsSubmitting(true);
 
     try {
-      // --- TWORZENIE FORM DATA ---
       const formData = new FormData();
       
-      // Dodajemy treść tweeta
       formData.append("tweet[content]", replyContent);
-      // Dodajemy ID rodzica
       formData.append("tweet[parent_tweet_id]", tweet.id.toString());
 
-      // Dodajemy pliki (zakładając, że backend Rails oczekuje tablicy images[])
       selectedFiles.forEach((file) => {
         formData.append("tweet[attachments][]", file);
       });
@@ -103,13 +95,10 @@ const TweetDetails = ({ tweet, currentUser }: TweetDetailsProps) => {
 
       console.log("Dodano komentarz:", response.data);
 
-      // Resetowanie stanu po sukcesie
       setReplyContent("");
-      clearImages(); // Czyści pliki z hooka
+      clearImages();
       setShowPicker(false);
       
-      // Opcjonalnie: Zamiast reloadu, lepiej byłoby dodać tweet do listy lokalnie,
-      // ale przy reloadzie zadziała na pewno.
       window.location.reload(); 
     } catch (error) {
       console.error("Błąd podczas dodawania odpowiedzi:", error);
@@ -123,7 +112,7 @@ const TweetDetails = ({ tweet, currentUser }: TweetDetailsProps) => {
 
   return (
     <div className="border-twitterOutliner border-b px-4">
-      {/* SEKCJA AUTORA TWEETA GŁÓWNEGO */}
+
       <div className="mt-4 mb-4 flex h-10 flex-row">
         <div className="mr-2 flex h-10 w-10.5 items-center justify-start">
           <img
@@ -180,7 +169,7 @@ const TweetDetails = ({ tweet, currentUser }: TweetDetailsProps) => {
         </div>
       </div>
 
-      {/* SEKCJA FORMULARZA ODPOWIEDZI */}
+
       <div className="mt-2 flex min-h-21 flex-row gap-2 pt-1 pb-3">
         <div className="flex items-start">
           <img
@@ -200,7 +189,7 @@ const TweetDetails = ({ tweet, currentUser }: TweetDetailsProps) => {
             disabled={isSubmitting}
           />
 
-          {/* Podgląd zdjęć */}
+
           <ImagePreview images={selectedImages} onRemove={removeImage} />
         </div>
       </div>
@@ -237,7 +226,7 @@ const TweetDetails = ({ tweet, currentUser }: TweetDetailsProps) => {
           </div>
         )}
         
-        {/* Przycisk Submit ze zmienioną logiką stylów i disable */}
+
         <button
           onClick={handleReplySubmit}
           disabled={isButtonDisabled}

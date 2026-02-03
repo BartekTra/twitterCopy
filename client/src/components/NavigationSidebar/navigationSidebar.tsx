@@ -1,10 +1,7 @@
-import React from "react";
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+
 import { House, Twitter, Search, Bell, Mail, Bookmark, FlaskConical, User, CircleEllipsis} from "lucide-react";
 import NavigationSidebarButton from "./NavigationSidebarComponents/NavigationSidebarButton";
 const NavigationSidebar = () => {
-  const navigate = useNavigate();
 
   return (
     <div className="flex justify-end">
